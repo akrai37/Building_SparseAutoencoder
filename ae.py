@@ -97,7 +97,7 @@ for id_user in range(nb_users):
         s += 1.
 print('test loss: '+str(test_loss/s))
 
-#finding the movie ratings of a particular movie for a particular user
+# finding the movie ratings of a particular movie for a particular user
 target_user_id = 3 #You can change the target_user_id and target_movie_id to what you need.
 target_movie_id = 327
 input = Variable(training_set[target_user_id-1]).unsqueeze(0)
