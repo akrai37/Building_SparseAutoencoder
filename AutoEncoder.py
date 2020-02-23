@@ -117,7 +117,7 @@ for id_users in range(nb_users):#we dont need "loss.backward()" and "optimizer.s
 #So if "output" and "target" are different, dont you think our testing code is wrongly build?? 
 
 #finding the movie ratings of a particular movie for a particular user.note- it wont give a direct loss value but a value close to 3. If the value is greater than 3, that means the review is positive else negative.cont.  
-target_user_id = 3#we can also calculate the actual loss by using codes same in training or test set but we chose a simpler way with few lines of codes. 
+target_user_id = 3 #we can also calculate the actual loss by using same codes in training or test set but we chose a simpler way with few lines of codes. 
 target_movie_id = 327
 input = Variable(training_set[target_user_id-1]).unsqueeze(0)
 output = sae(input)
