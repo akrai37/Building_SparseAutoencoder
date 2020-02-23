@@ -1,0 +1,144 @@
+---------For example, this equation of a line y = 3*x + 4, y is a linear transformation of x and 3 is the scaling component and 4 is the shift component. In this way, bias is equivalent to the shift parameter while the weights are equivalent to the scaling parameter.
+
+
+------------I had the same question in mind. From what I can understand, an autoencoder is a single layer ANN with as many nodes in the output layer as there are in the input layer since instead of comparing the output to labels, we compare it to the inputs.
+
+-----------Sparsity is implemented through penalizing activations and dropout is done through randomly dropping activations.
+
+------------During the training phase a sparsity constraint is added to the loss function to make sure all nodes are not active at the same time.
+
+However, when i am using the machine for prediction, are all the nodes active ?
+
+----------read- I think in order to justify the stacking of deep learning networks with lots of neurons per layer akin to biological networks, the sparsity constraint was considered. Fortunately, one explanation for sparsity also seems to come from findings in the human brain, suggesting sparseness of neuronal activities; that is, biological neurons have low activations and many of them do not even fire for processing some stimuli.
+
+------------Denoising Autoencoders are really awesome. 
+
+The only difference between autoencoders and de-noising autoencoders is that in the encoding layers, the features are corrupted very little by adding very small random gaussian noise to the features in each layer so that the decoding part will have to learn the structure of the data to reduce the loss and not just simply copy from input to output.
+
+It is basically used to force the decoder part to learn the structure of the data and not just copy from the input side. 
+
+
+
+--------------The main difference is that an autoencoder is trained i/p to o/p in one shot,, whereas stacked autoencoder is subjected to a greedy layerwise training.
+You train one layer of autoencoder, then add another layer on the trained layer and train that whole model to be an autoencoder, and so on is greedy layer wise training
+
+
+------------'dataframe' is a datatype of pandas. A two dimensional(expandable) structure having rows and columns  to store the data.
+
+=========================================================================================================================================================================================================================
+------Would a value of zero not be treated as the lowest possible score by the AutoEncoder? After training, it seems like the AutoEncoder would treat users who have not watched a movie in the same category as users who hated a movie.
+
+------tensor are simply arrays that contain data of same type. Pytorch works with tensors and not with numpy arrays.
+
+
+-------because nn.Module contains variables and functions that we will just use without defining them.
+                                                      
+Of course we can write a new class all by ourselves, but then you will have to code from scratch all the methods we are using now.
+
+-------Inheritance leads to code reuse and is hence efficient.
+
+
+-------Full connections means having weights between nodes.
+
+The weights of the nodes are randomly initialized and then learnt through backpropagation.
+
+
+----------ip-The SAE class inherits methods from the nn.Module class and the 'parameters' are from the nn.Module class.
+
+
+--------We don't need to add the activation there since the layer will use the default linear activation since we are predicting nb_movies at the o/p
+
+----------------------------------------------------------------------------------
+
+--------torch dosent work on simple 1 dimension arrays. we need to create a batch or multidimenoinal array
+
+
+---------[ put in code] you should know that there is only one layer that is getting  modified which is represented by  x vector. there are no seperate hidden layers and output layer.
+
+
+---------So, it goes like this. You call sae -> it calls nn.Module -> it accesses the __call__ -> it executes the forward() which it finds within our SAE class.
+--The forward function should be overridden by all subclasses.
+
+
+-----------------
+Shouldn't it be output = sae.forward(input)
+instead of sae(input)
+
+ans-It is the same since forward is the only other function in sae other than the init fn.
+also it is the only fn with a parameter which here is  x.
+
+
+========================================================================================================================================================================================================================================
+
+Backward is the function that updates weights on the back-propagation
+
+Its not the direction of weight update, but the direction of update pass. It is the back in back-propagation.
+
+We know that the function has backward from the documentation.
+
+--------------------------------------------------------------------------------
+
+In this case, the target is the same as the input. We can just calculate the gradient w.r.t the input instead of doing it twice for the input and the target hence reducing computations. This is only true for autoencoders.     
+
+--------------------------------------------------------------------------------
+ question-we are calculating the loss with MSE, so IMO if the output values are different from zero where the target elements equal zero, the MSE would increase. And this appears to be relevant information to training our model.
+
+
+ans-Mathematically speaking you are right, setting the output to 0 has a big influence on the error-calculations.
+
+But conceptually, that is exactly what we want. Image a movie is not rated (=0) and the system predicts a 3-rating.  Now, if you would calculate the error for that movie you'll get a 3 -- BUT, this is not true. The 0 means actually there is no data, and not that the movie was rated 0 (big difference!). The user might have rated it 4 (or any other number) if he/she HAD seen it. And the model should not treat a "bad rating" same as "no rating".
+
+So to not penalize users, that just haven't seen a movie, the output is set to 0.
+
+Also, do you notice that omitting the output=0 leads to error-rate around 3? That is, because most users have only rated a very small fractions of all possible movies, thus omitting the output=0 line would wrongly calculate an error for the majority of non-existing rating and leading to an average error-rate of 3 (in the middle of 1-5).
+
+-----------------------------------------------------------------------------------------
+
+I was also confused about how loss and the optimizer are connected. At the beginning i thought they are not but actually it turned out that they are. When loss.backward() is called, gradients are being computed for the weights of the network. These computed gradients are used later on by the optimizer to update the weights.
+
+---------------------------------------------------------------------------
+
+You can use the following code for the Autoencoder.
+
+You can change the target_user_id and target_movie_id to what you need.
+
+target_user_id = 3
+target_movie_id = 327
+input = Variable(training_set[target_user_id-1]).unsqueeze(0)
+output = sae(input)
+output_numpy = output.data.numpy()
+print (''+ str(output_numpy[0,target_movie_id-1]))
+ 
+-----------------------------------------------------------------------------------
+
+we dont need unsqueeze() for 'target' because in test set we keep the test dataset untouched or unchanged.but for some , it started showing errors.
+ , so we have to use unsqueeze() in target as well
+
+----------------------------------------------------------------------------------
+If you run into this error:
+
+UserWarning: invalid index of a 0-dim tensor. This will be an error in PyTorch 0.5. Use tensor.item() to convert a 0-dim tensor to a Python number
+
+Change these lines:
+
+training_loss += np.sqrt(loss.data[0]*mean_corrector)
+test_loss += np.sqrt(loss.data[0]*mean_corrector)
+Into these lines:
+
+training_loss += np.sqrt(loss.item()*mean_corrector) 
+test_loss += np.sqrt(loss.item()*mean_corrector) 
+From: https://github.com/pytorch/pytorch/releases
+
+Consider the widely used pattern total_loss += loss.data[0] before 0.4.0. loss was a Variablewrapping a tensor of size (1,), but in 0.4.0 loss is now a scalar and has 0 dimensions. Indexing into a scalar doesn't make sense (it gives a warning now, but will be a hard error in 0.5.0): use loss.item() to get the Python number from a scalar.
+
+Note that if you don't convert to a Python number when accumulating losses, you may find increased memory usage in your program. This is because the right-hand-side of the above expression used to be a Python float, while it is now a zero-dim Tensor. The total loss is thus accumulating Tensors and their gradient history, which may keep around large autograd graphs for much longer than necessary.
+
+------------------------------------------------------------------------------
+
+how do we store the trained model and how to use it? otherwise we have to train the mode again and again.
+
+-----------------------------------------------------------------------------
+"target" and "input" should be same because we will take the "input" as input and the "output" generated will be compared to "input" or "target". "target" basically indicates the original input values, otherwise "input" variable is enough . Now we are using training set input for the test set   " input = Variable(training_set[id_user]).unsqueeze(0)" but our target variable(which is the variable denoted for the original values) is taken  from the test dataset(u1.test) which has different movies that were rated by the users.(different movie_ids basically).So if "output" and "target" are different,
+dont you think our model is wrongly build?? 
+
+
