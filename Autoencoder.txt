@@ -20,7 +20,7 @@ It is basically used to force the decoder part to learn the structure of the dat
 
 
 --------------The main difference is that an autoencoder is trained i/p to o/p in one shot,, whereas stacked autoencoder is subjected to a greedy layerwise training.
-You train one layer of autoencoder, then add another layer on the trained layer and train that whole model to be an autoencoder, and so on is greedy layer wise training
+You train one layer of autoencoder, then add another layer on the trained layer and train that whole model to be an autoencoder, and so on is greedy layer wise training.
 
 
 ------------'dataframe' is a datatype of pandas. A two dimensional(expandable) structure having rows and columns  to store the data.
